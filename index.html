@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1 class="title">​Рассчитайте ипотеку</h1>
+
+    <form class="parameters">
+
+        <h3 class="points">Цель кредита</h3>
+
+        <div class="radio">
+            <input id="flat" name="property" type="radio" value="flat" checked>
+            <label for="flat" class="flat active">Квартира</label>
+            <input id="home" name="property" type="radio" value="home">
+            <label for="home" class="home">Дом</label>
+        </div>
+
+        <h3 class="points">Стоимость недвижимости</h3>
+        <p>
+            <input id="amount" type="text" class="choice price">
+        </p>
+        <div id="slider-range" class="slider-range"></div>
+
+        <h3 class="points">Первоначальный взнос</h3>
+        <p>
+            <input id="amount-contribution" type="text" class="choice price contrib">
+            <span id="percents" class="percents"></span>
+        </p>
+        <div id="slider-range-contribution" class="slider-range contribution"></div>
+        
+        <h3 class="points">Срок кредита</h3>
+        <p>
+            <input id="amount-time" type="text" class="choice price time">
+            <span id="time" class="time"></span>
+        </p>
+        <div id="slider-range-time" class="slider-range time"></div>
+
+    </form>
+
+    <section class="calculation">
+        <div class="calculation_line"></div>
+    </section>
+
+
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery-ui.min.js"></script>
+    <script src="/js/script.js"></script>
+    
+</body>
+</html>
