@@ -45,7 +45,30 @@
     </form>
 
     <section class="calculation">
-        <div class="calculation_line"></div>
+        <div class="calculation_results-row calculation_results-row-top">
+            <div class="calculation_result">
+                <div class="calculation_title">Сумма кредита</div>
+                <span class="calculation_value calculation_value-sum" ></span>
+            </div>
+            <div class="calculation_result calculation_result-right">
+                <div class="calculation_title">Ежемесячный платеж</div>
+                <span class="calculation_value calculation_value-payment" ></span>
+            </div>
+        </div>
+
+        <div class="calculation_results-row">
+            <div class="calculation_result">
+                <div class="calculation_title">Необходимый доход</div>
+                <span class="calculation_value calculation_value-income" ></span>
+            </div>
+            <div class="calculation_result calculation_result-right">
+                <div class="calculation_title">Процентная ставка</div>
+                <span class="calculation_value calculation_value-rate" ></span>
+            </div>
+        </div>
+
+        <canvas id="chart" class="chart" width="560" height="400"></canvas>
+        
     </section>
 
 

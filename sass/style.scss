@@ -102,14 +102,38 @@
 
 //рассчет
 .calculation {
-	width: 520px;
-	height: 100px;
+	width: 480px;
+	height: 130px;
 	border: 1px solid #C9CBCD;
 	border-radius: 5px;
-	padding: 20px;
+	padding: 15px 40px 15px 40px;
 	margin: 10px 0 0 80px;
-	&_line {
-		border-bottom: 1px dotted #C9CBCD;
-		margin-top: 50px;
+	&_results-row {
+		display: flex;
 	}
+	&_results-row-top {
+		border-bottom: 1px dotted #C9CBCD;
+	}
+	&_result {
+		width: 200px;
+		padding: 12px 0 12px 0;
+	}
+	&_result-right {
+		margin-left: 80px;
+	}
+	&_title {
+		font-size: 14px;
+		color: #9DA2A6;
+	}
+	&_value {
+		color: #007ACC;
+		font-weight: 700;
+	}
+}
+//график
+.chart {
+	margin-top: 50px;
+	border: 1px solid #C9CBCD;
+	border-radius: 5px;
+	transform: translateX(-40px);
 }
