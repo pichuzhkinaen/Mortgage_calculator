@@ -16,11 +16,11 @@ $(document).ready(function() {
 		
 		$( ".calculation_value-income" ).html( Math.round( paymentMonth * 100 / requiredIncome ).toLocaleString( "ru-RU" ) + " ₽" );
 		
-		repaymentCalc(rateMonth, rate, paymentMonth);
+		repaymentCalc(rateMonth, paymentMonth);
 	}
 
 	//рассчет погашений
-	function repaymentCalc(rateMonth, rate, paymentMonth) {
+	function repaymentCalc(rateMonth, paymentMonth) {
 		let mainDebt = $( "#slider-range" ).slider( "value" ) - $( "#slider-range-contribution" ).slider( "value" ), //текущий размер основного долга
 			creditTerm = $( "#slider-range-time" ).slider( "value" ), //срок
 			monthPeriod = creditTerm * 12; //срок в месяцах
@@ -42,42 +42,36 @@ $(document).ready(function() {
 				// console.log("основная часть = " + mainMonthlyPay);
 
 			}
-		//console.log(rateMonth, rate, paymentMonth);
 		plotting (monthPeriod, arrPercentMonthlyPay, paymentMonth);
-		// console.log(mainDebt);
-		// console.log(creditTerm);
-		// console.log(rateMonth, rate, paymentMonth);
-		// console.log(percentMonthlyPay, mainMonthlyPay);
-		// console.log(monthPeriod);
 	}
 
 
 	//построение графика
 	function plotting (monthPeriod, arrPercentMonthlyPay, paymentMonth) {
+		//перенесено в конец, вне функции plotting(), чтобы при движении ползунка отрисовывалось правильно (иначе не работает изменение начала координат)
 		// let canvas = document.getElementById("chart");
 		// let context = canvas.getContext("2d");
-		// 	context.transform(1, 0, 0, -1, 0, canvas.height);	
-			//context.moveTo(0, 0);
-			//context.lineTo(200,200);
-			stepX = monthPeriod / canvas.clientWidth,
-			stepY = paymentMonth / canvas.clientHeight;
+		// context.transform(1, 0, 0, -1, 0, canvas.height);	
+		// context.moveTo(0, 0);
+		// context.lineTo(200,200);
+		stepX = monthPeriod / canvas.clientWidth,
+		stepY = paymentMonth / canvas.clientHeight;
 
 		//фон
-		
 		context.beginPath();
 		context.lineWidth = 1;
 		context.rect(0, 0, canvas.clientWidth, canvas.clientHeight);
 		context.stroke();
 
+		//заливка фона
 		context.fillStyle = "#E3F0FB";
 		context.fill();
 
+		//отрисовка графика
 		context.beginPath();
 		context.strokeStyle = "#007ACC";
 		context.lineWidth = 1;
-		//context.beginPath();
-		//context.clearRect(0, 0, canvas.width, canvas.height);
-		// context.clearRect();
+
 		context.moveTo(0, arrPercentMonthlyPay[0] / stepY); //координаты начальной точки
 
 		for (let i = 0; i < monthPeriod; i++) {
@@ -89,13 +83,10 @@ $(document).ready(function() {
 		context.lineTo(0,0);
 		context.stroke();
 		
-
-		//заливка		
+		//заливка графика	
 		context.fillStyle = "#A2DA95";
 		context.fill();
-		//console.log(monthPeriod);
 	}
-	
 	
 
 	//склонение слова "год"
@@ -188,17 +179,19 @@ $(document).ready(function() {
 	});
 
 
-	$( "#amount-time" ).val( $( "#slider-range-time" ).slider( "value" ) + " лет");
+	$( "#amount-time" ).val( $( "#slider-range-time" ).slider( "value" ) + " лет"); //добавление в третий инпут значения при загрузке страницы
+
 
 	//сумма кредита
 	$( ".calculation_value-sum" ).html(( $( "#slider-range" ).slider( "value" ) - $( "#slider-range-contribution" ).slider( "value" )).toLocaleString( "ru-RU" ) + " ₽"); 		
 
+
+	//перенесено в конец, вне функции plotting(), чтобы при движении ползунка отрисовывалось правильно (иначе не работает изменение начала координат)
 	let canvas = document.getElementById("chart");
 	let context = canvas.getContext("2d");
-		context.transform(1, 0, 0, -1, 0, canvas.height);	
+	context.transform(1, 0, 0, -1, 0, canvas.height);	
+
 
 	//ежемесячный платеж
 	monthlyPay();
-	
-	
 });
