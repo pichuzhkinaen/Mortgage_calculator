@@ -1,35 +1,61 @@
-$(document).ready(function() {
+window.addEventListener('DOMContentLoaded', function() {
+	'use strict';
 
-	//ежемесячный платеж и необходимый доход
-	function monthlyPay() {
-		let rate = 9.2, //годовая процентная ставка
-			rateMonth = rate / 100 / 12, //ежемесячная процентная ставка
-			tmp = ( 1 + rateMonth )** (($ ( "#slider-range-time" ).slider( "value" ) ) * 12),
-			paymentMonth = ($( "#slider-range" ).slider( "value" ) - $( "#slider-range-contribution" ).slider( "value" )) * rateMonth * tmp / (tmp - 1), //ежемесячный платеж
+		//получение данных из php (последняя строка БД)
+		$.ajax({
+			url: "/get_data_1str.php",
+			type : "POST",
+			success: function (responseText) {
+				//console.log('ajax = ' + responseText);
+				let result = JSON.parse(responseText, function(key, value) {
+					return value;
+				});
+				//console.log(result);
+
+				main(result);
+			}
+		});
+});
+
+
+function main(result) {
+	let rate = result.percent_rate, //процентная ставка
+		contrib = result.percent_contribution; //первоначальный взнос
+
+	// console.log('percent_rate = ' + rate);
+	// console.log('percent_contribution = ' + contrib);
+
+
+	//ежемесячный платеж
+	function monthlyPay(rate) {
+		let	rateMonth = rate / 100 / 12, //ежемесячная процентная ставка
+			rateGeneral = ( 1 + rateMonth )** (($ ( "#slider-range-time" ).slider( "value" ) ) * 12), //общая ставка
+			paymentMonth = ($( "#slider-range" ).slider( "value" ) - $( "#slider-range-contribution" ).slider( "value" )) * rateMonth * rateGeneral / (rateGeneral - 1), //ежемесячный платеж
 			requiredIncome = 50; //необходимый доход ставка
 
+		//запись ставки процента
 		$( ".calculation_value-rate" ).html( ( rate ) + " %");
 
+		//запись ежемесячного платежа
 		$( ".calculation_value-payment" ).html( Math.round(paymentMonth).toLocaleString( "ru-RU" ) + " ₽" );
 
 		//необходимый доход
-		
 		$( ".calculation_value-income" ).html( Math.round( paymentMonth * 100 / requiredIncome ).toLocaleString( "ru-RU" ) + " ₽" );
-		
+		//console.log(rate);
 		repaymentCalc(rateMonth, paymentMonth);
 	}
+
 
 	//рассчет погашений
 	function repaymentCalc(rateMonth, paymentMonth) {
 		let mainDebt = $( "#slider-range" ).slider( "value" ) - $( "#slider-range-contribution" ).slider( "value" ), //текущий размер основного долга
 			creditTerm = $( "#slider-range-time" ).slider( "value" ), //срок
-			monthPeriod = creditTerm * 12; //срок в месяцах
-			percentMonthlyPay = mainDebt * rateMonth; //процентная часть ежемесячного платежа
-			//percentMonthlyPay = mainDebt * (rate / 100) * 30 / 365; //процентная часть ежемесячного платежа
-			mainMonthlyPay = Math.round( paymentMonth - percentMonthlyPay ), //основная часть ежемесячного платежа
+			monthPeriod = creditTerm * 12, //срок в месяцах
+			percentMonthlyPay = mainDebt * rateMonth, //процентная часть ежемесячного платежа
+			mainMonthlyPay =  paymentMonth - percentMonthlyPay, //основная часть ежемесячного платежа
 			arrPercentMonthlyPay = []; //массив с процентной частью ежемесячного платежа
-			//currentAmount = currentAmount - mainMonthlyPay; //текущий размер основного долга
 
+			// процентная и основная часть для каждого месяца
 			for (i = 0; i < monthPeriod; i ++) {
 				mainDebt = mainDebt - mainMonthlyPay;
 				percentMonthlyPay = Math.round( mainDebt * rateMonth ); //процентная часть ежемесячного платежа
@@ -40,7 +66,6 @@ $(document).ready(function() {
 				// console.log("текущий размер основного долга = " + mainDebt);
 				// console.log("процентная часть = " + percentMonthlyPay);
 				// console.log("основная часть = " + mainMonthlyPay);
-
 			}
 		plotting (monthPeriod, arrPercentMonthlyPay, paymentMonth);
 	}
@@ -68,12 +93,14 @@ $(document).ready(function() {
 		context.fill();
 
 		//отрисовка графика
+
 		context.beginPath();
 		context.strokeStyle = "#007ACC";
 		context.lineWidth = 1;
 
 		context.moveTo(0, arrPercentMonthlyPay[0] / stepY); //координаты начальной точки
 
+		//определение координат графика
 		for (let i = 0; i < monthPeriod; i++) {
 			let y = arrPercentMonthlyPay[i] / stepY,
 				x = i / stepX;
@@ -111,61 +138,61 @@ $(document).ready(function() {
 		$(".home").addClass("active");
 	});	
 
-
-	//слайдеры и расчет %%
-	let totalPrice = 0,
+	
+	let totalPrice = 2000000,
 		firstAmount = 0;
 
-	//стоимость недвижимости
+	// 1, стоимость недвижимости
 	$("#slider-range").slider({
 		range: "min",
 		min: 300000,
 		max: 30000000,
-		value: 2000000,
+		value: totalPrice,
 		slide: function( event, ui ) {
 
 			$( "#amount" ).val( ui.value.toLocaleString( "ru-RU" ) + " ₽" ); //добавление знач. в первый инпут, добавление пробелов после 3х знаков
 
 			totalPrice = Math.round (ui.value); //округление до ближайшего целого значения ползунка
-			firstAmount = Math.round (totalPrice * 15 / 100); //округление до ближайшего целого значения первонач. взноса
+			firstAmount = Math.round (totalPrice * contrib / 100); //округление до ближайшего целого значения первонач. взноса
 
 			$( "#amount-contribution" ).val( firstAmount.toLocaleString( "ru-RU" ) + " ₽"  ); //добавление знач. во второй инпут
 		
 			$( "#slider-range-contribution" ).slider('option',{min: firstAmount}); //минимальное значение второго слайдера равно 15% от первонач. взноса
 			$( "#slider-range-contribution" ).slider('option',{max: totalPrice}); //максимальное значение второго слайдера равно значению первого слайдера
-			$( "#slider-range-contribution" ).slider( "value", firstAmount );
+			$( "#slider-range-contribution" ).slider( "value", firstAmount);
 			$( "#percents" ).html(((firstAmount ) / ( totalPrice) * 100).toFixed(1) + " %" ); //расчет процентов при движении первого ползунка
-			monthlyPay();
+			monthlyPay(rate);
 		}
 	});
-
+	
 
 	$( "#amount" ).val( $( "#slider-range" ).slider( "value" ).toLocaleString( "ru-RU" ) + " ₽"); //добавление в первый инпут значения при загрузке страницы
 
 
-	//первоначальный взнос
+	// 2, первоначальный взнос
 	$("#slider-range-contribution").slider({
 		range: "min",
-		min: 45000,
+		min: 100,
 		max: 30000000,
-		value: 500000,
+		value: Math.round (totalPrice * contrib / 100),
 		slide: function( event, ui ) {
 
 			$( "#amount-contribution" ).val( ui.value.toLocaleString( "ru-RU" ) + " ₽" ); //добавление знач. во второй инпут, добавление пробелов после 3х знаков
-
 			$( "#percents" ).html((( ui.value ) / ( $( "#slider-range" ).slider( "value" )) * 100).toFixed(1) + " %" ); //расчет процентов при движении второго ползунка
-			monthlyPay();
+			// $( "#percents" ).html('option',{min: contrib});
+
+			monthlyPay(rate);
 		}
 	});
 
 
 	$( "#amount-contribution" ).val( $( "#slider-range-contribution" ).slider( "value" ).toLocaleString( "ru-RU" ) + " ₽"); //добавление во второй инпут значения при загрузке страницы
 	$( "#slider-range-contribution" ).slider('option',{max: 2000000}); //установка мин знач второго слайдера при загрузке стр
-	$( "#slider-range-contribution" ).slider('option',{min: 300000}); //установка макс знач второго слайдера при загрузке стр
+	$( "#slider-range-contribution" ).slider('option',{min: Math.round (totalPrice * contrib / 100)}); //установка макс знач второго слайдера при загрузке стр
 	$( "#percents" ).html( ($( "#slider-range-contribution" ).slider( "value" ) / ( $( "#slider-range" ).slider( "value" )) * 100).toFixed(1) + " %" ); //расчет процентов при загрузке стр
 
 
-	//срок кредита
+	// 3, срок кредита
 	$( "#slider-range-time" ).slider({
 		range: "min",
 		min: 1,
@@ -174,7 +201,7 @@ $(document).ready(function() {
 		slide: function( event, ui ) {
 			//подстановка функции склонения лет и запись значения в инпут
 			$( "#amount-time" ).val(ui.value + ' ' + years(ui.value));
-			monthlyPay();
+			monthlyPay(rate);
 		}
 	});
 
@@ -193,5 +220,5 @@ $(document).ready(function() {
 
 
 	//ежемесячный платеж
-	monthlyPay();
-});
+	monthlyPay(rate);
+};

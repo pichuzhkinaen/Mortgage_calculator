@@ -1,0 +1,65 @@
+.admin {
+    display: flex;
+    justify-content: space-around;
+    //align-items: center;
+}
+.data {
+    width: 512px;
+    height: 400px;
+    border-radius: 5px;
+    border: 1px solid #C9CBCD;
+    padding-left: 10px;
+    //margin: 0 auto;
+    padding: 30px;
+    &_title {
+        font-size: 20px;
+    }
+    &_input {
+        width: 180px;
+        height: 40px;
+        font-size: 20px;
+        color: #596167;
+        border-radius: 5px;
+        border: 1px solid #C9CBCD;
+        padding-left: 10px;
+        margin: 10px 0 0 20px;
+    }
+    &_contribution {
+        display: flex;
+        margin-top: 20px;
+        &_input {
+            transform: translateY(-5px);
+        }
+    }
+    &_submit {
+        width: 120px;
+        height: 40px;
+        background-color: #007ACC;
+        color: #ffffff;
+        margin: 50px 0 0 0;
+    }
+}
+
+.client_href {
+	font-size: 15px;
+    text-align: right;
+}
+
+.table {
+    //position: absolute;
+    width: 550px;
+    height: 150px;
+    border: 1px solid#C9CBCD;
+    border-collapse: collapse;
+    //margin: 95px 0 0 10px;
+
+    //ячейки
+    &_cell, &_string {
+        border: 1px solid #C9CBCD;
+    }
+
+    //текст
+    &_text {
+        font-size: 12px;
+    }
+}
